@@ -2,6 +2,7 @@
   <form @submit.prevent="handleSubmit">
     <input type="email" required placeholder="email" v-model="email"/>
     <input type="password" required placeholder="password" v-model="password"/>
+    <div class="error">{{ error }}</div>
     <button>Log in</button>
   </form>
 </template>
@@ -9,29 +10,28 @@
 <script>
 import { ref } from 'vue'
 import { auth } from '../firebase/config'
+import useLogin from '../composables/useLogin'
 
 export default {
     setup() {
         const email = ref('')
         const password = ref('')
 
+        const { error, login } = useLogin()
+
         const handleSubmit = async () => {
-            console.log(email.value, password.value)
-            // try {
-            //     await auth.createUserWithEmailAndPassword(email.value, password.value)
-            //     const user = auth.currentUser
-            //     await user.updateProfile({
-            //         displayName: displayName.value
-            //     })
-            // } catch (error) {
-            //     console.error(error.message)
-            // }
+            
+            await login(email.value, password.value)
+            if (!error.value) {
+              console.log('user logged in')
+            }
         }
 
         return {
             email,
             password,
-            handleSubmit
+            handleSubmit,
+            error
         }
     }
 }
